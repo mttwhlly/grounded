@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>54321 Grounding</title>
+    <link rel="manifest" href="data:application/json,{%22name%22:%2254321%20Grounding%22,%22short_name%22:%22Grounding%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f0f8ff%22,%22theme_color%22:%22%236b73ff%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='40' fill='%236b73ff'/%3E%3C/svg%3E%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22}]}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        strong {
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 64px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 460px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .grounding-steps {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .step-counter {
+            font-size: 0.9rem;
+            color: #6b73ff;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #34495e;
+            font-weight: 300;
+        }
+
+        .prompt {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        .ok-button {
+            background: white;
+            color: #6b73ff;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 30px rgba(107, 115, 255, 0.3);
+        }
+
+        .ok-button:hover {
+            box-shadow: 0 15px 40px rgba(107, 115, 255, 0.4);
+        }
+
+        .ok-button:active {
+            transform: translateY(0);
+        }
+
+        .breathing-screen {
+            display: none;
+        }
+
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            border: 4px solid #6b73ff; 
+            border-radius: 50%;
+            margin: 2rem auto;
+            position: relative;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .breathing-text {
+            font-size: 1.1rem;
+            color: #6b73ff;
+            margin-top: 1rem;
+            font-weight: 300;
+        }
+
+        .completion-message {
+            font-size: 1.3rem;
+            color: #27ae60;
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        .restart-button {
+            background: none;
+            color: #6b73ff;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: 300;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .prompt {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="grounding-steps" class="grounding-steps">
+            <div class="step-counter" id="stepCounter">Step 1 of 5</div>
+            <h1 id="title">What can you see?</h1>
+            <div class="prompt" id="prompt">
+                <p>Take a moment to settle in.</p><p>When you're ready, look around and notice <strong>5 things you can see</strong>.</p><p>Take your time with each one.</p>
+            </div>
+            <button class="ok-button" onclick="nextStep()">OK</button>
+        </div>
+
+        <div id="breathing-screen" class="breathing-screen">
+            <!-- <div class="completion-message">Well done</div> -->
+            <h1>Take a moment to breathe</h1>
+            <div class="breathing-circle"></div>
+            <button class="restart-button" onclick="restart()">Start Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('data:text/javascript,const CACHE_NAME = "grounding-pwa-v1"; const urlsToCache = ["/"]; self.addEventListener("install", event => { event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))); }); self.addEventListener("fetch", event => { event.respondWith(caches.match(event.request).then(response => response || fetch(event.request))); });');
+        }
+
+        let currentStep = 0;
+
+        const steps = [
+            {
+                title: "What can you see?",
+                prompt: "<p>Take a moment to settle in.</p><p>When you're ready, look around and notice <strong>5 things you can see</strong>.</p><p>Take your time with each one.</p>"
+            },
+            {
+                title: "What can you touch?",
+                prompt: "<p>Now, focus on <strong>4 things you can touch</strong> around you.</p><p>Feel their texture, temperature, or weight.</p>"
+            },
+            {
+                title: "What can you hear?",
+                prompt: "<p>Listen carefully and identify <strong>3 things you can hear</strong>.</p><p>They might be near or far, loud or quiet.</p>"
+            },
+            {
+                title: "What can you smell?",
+                prompt: "<p>Take a gentle breath and notice <strong>2 things you can smell</strong>.</p><p>Don't worry if they're subtle.</p>"
+            },
+            {
+                title: "What can you taste?",
+                prompt: "<p>Finally, focus on <strong>1 thing you can taste</strong>.</p><p>It might be lingering from something you drank or ate, or just the taste in your mouth right now.</p>"
+            }
+        ];
+
+        function nextStep() {
+            currentStep++;
+            
+            if (currentStep < steps.length) {
+                updateStep();
+            } else {
+                showBreathingScreen();
+            }
+        }
+
+        function updateStep() {
+            const stepCounter = document.getElementById('stepCounter');
+            const title = document.getElementById('title');
+            const prompt = document.getElementById('prompt');
+            
+            stepCounter.textContent = `Step ${currentStep + 1} of 5`;
+            title.textContent = steps[currentStep].title;
+            prompt.innerHTML = steps[currentStep].prompt;
+        }
+
+        function showBreathingScreen() {
+            document.getElementById('grounding-steps').style.display = 'none';
+            document.getElementById('breathing-screen').style.display = 'flex';
+            document.getElementById('breathing-screen').style.flexDirection = 'column';
+            document.getElementById('breathing-screen').style.height = '100%';
+            document.getElementById('breathing-screen').style.justifyContent = 'space-between';
+            
+        }
+
+        function restart() {
+            currentStep = 0;
+            document.getElementById('grounding-steps').style.display = 'flex';
+            document.getElementById('grounding-steps').style.flexDirection = 'column';
+            document.getElementById('grounding-steps').style.height = '100%';
+            document.getElementById('grounding-steps').style.justifyContent = 'space-between';
+            document.getElementById('breathing-screen').style.display = 'none';
+            
+            const stepCounter = document.getElementById('stepCounter');
+            const title = document.getElementById('title');
+            const prompt = document.getElementById('prompt');
+            
+            stepCounter.textContent = 'Step 1 of 5';
+            title.textContent = steps[0].title;
+            prompt.innerHTML = steps[0].prompt;
+        }
+    </script>
+</body>
+</html>
