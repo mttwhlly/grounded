@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -24,6 +25,10 @@
             justify-content: center;
             color: #2c3e50;
             line-height: 1.6;
+        }
+
+        .fade-element {
+            opacity: 1;
         }
 
         p {
@@ -167,12 +172,12 @@
 <body>
     <div class="container">
         <div id="grounding-steps" class="grounding-steps">
-            <div class="step-counter" id="stepCounter">Step 1 of 5</div>
-            <h1 id="title">What can you see?</h1>
-            <div class="prompt" id="prompt">
+            <div class="step-counter fade-element" id="stepCounter">Step 1 of 5</div>
+            <h1 id="title" class="fade-element">What can you see?</h1>
+            <div class="prompt fade-element" id="prompt">
                 <p>Take a moment to settle in.</p><p>When you're ready, look around and notice <strong>5 things you can see</strong>.</p><p>Take your time with each one.</p>
             </div>
-            <button class="ok-button" onclick="nextStep()">OK</button>
+            <button class="ok-button fade-element" onclick="nextStep()">OK</button>
         </div>
 
         <div id="breathing-screen" class="breathing-screen">
@@ -215,13 +220,36 @@
         ];
 
         function nextStep() {
-            currentStep++;
+            const fadeElements = document.querySelectorAll('.fade-element');
             
-            if (currentStep < steps.length) {
-                updateStep();
-            } else {
-                showBreathingScreen();
-            }
+            // Smooth fade out
+            gsap.to(fadeElements, {
+                opacity: 0,
+                y: -20,
+                duration: 0.6,
+                ease: "power2.out",
+                stagger: 0.1,
+                onComplete: () => {
+                    currentStep++;
+                    
+                    if (currentStep < steps.length) {
+                        updateStep();
+                        // Smooth fade in
+                        gsap.fromTo(fadeElements, 
+                            { opacity: 0, y: 20 },
+                            { 
+                                opacity: 1, 
+                                y: 0, 
+                                duration: 0.8, 
+                                ease: "power2.out",
+                                stagger: 0.15
+                            }
+                        );
+                    } else {
+                        showBreathingScreen();
+                    }
+                }
+            });
         }
 
         function updateStep() {
@@ -235,29 +263,69 @@
         }
 
         function showBreathingScreen() {
-            document.getElementById('grounding-steps').style.display = 'none';
-            document.getElementById('breathing-screen').style.display = 'flex';
-            document.getElementById('breathing-screen').style.flexDirection = 'column';
-            document.getElementById('breathing-screen').style.height = '100%';
-            document.getElementById('breathing-screen').style.justifyContent = 'space-between';
+            const groundingSteps = document.getElementById('grounding-steps');
+            const breathingScreen = document.getElementById('breathing-screen');
             
+            groundingSteps.style.display = 'none';
+            breathingScreen.style.display = 'flex';
+            breathingScreen.style.flexDirection = 'column';
+            breathingScreen.style.height = '100%';
+            breathingScreen.style.justifyContent = 'space-between';
+            
+            // Animate breathing screen entrance
+            gsap.fromTo(breathingScreen.children,
+                { opacity: 0, y: 30 },
+                { 
+                    opacity: 1, 
+                    y: 0, 
+                    duration: 1, 
+                    ease: "power2.out",
+                    stagger: 0.2
+                }
+            );
         }
 
         function restart() {
-            currentStep = 0;
-            document.getElementById('grounding-steps').style.display = 'flex';
-            document.getElementById('grounding-steps').style.flexDirection = 'column';
-            document.getElementById('grounding-steps').style.height = '100%';
-            document.getElementById('grounding-steps').style.justifyContent = 'space-between';
-            document.getElementById('breathing-screen').style.display = 'none';
+            const breathingScreen = document.getElementById('breathing-screen');
+            const groundingSteps = document.getElementById('grounding-steps');
             
-            const stepCounter = document.getElementById('stepCounter');
-            const title = document.getElementById('title');
-            const prompt = document.getElementById('prompt');
-            
-            stepCounter.textContent = 'Step 1 of 5';
-            title.textContent = steps[0].title;
-            prompt.innerHTML = steps[0].prompt;
+            // Fade out breathing screen
+            gsap.to(breathingScreen.children, {
+                opacity: 0,
+                y: -20,
+                duration: 0.5,
+                ease: "power2.out",
+                stagger: 0.1,
+                onComplete: () => {
+                    currentStep = 0;
+                    groundingSteps.style.display = 'flex';
+                    groundingSteps.style.flexDirection = 'column';
+                    groundingSteps.style.height = '100%';
+                    groundingSteps.style.justifyContent = 'space-between';
+                    breathingScreen.style.display = 'none';
+                    
+                    const stepCounter = document.getElementById('stepCounter');
+                    const title = document.getElementById('title');
+                    const prompt = document.getElementById('prompt');
+                    
+                    stepCounter.textContent = 'Step 1 of 5';
+                    title.textContent = steps[0].title;
+                    prompt.innerHTML = steps[0].prompt;
+                    
+                    // Fade in first step
+                    const fadeElements = document.querySelectorAll('.fade-element');
+                    gsap.fromTo(fadeElements, 
+                        { opacity: 0, y: 20 },
+                        { 
+                            opacity: 1, 
+                            y: 0, 
+                            duration: 0.8, 
+                            ease: "power2.out",
+                            stagger: 0.15
+                        }
+                    );
+                }
+            });
         }
     </script>
 </body>
